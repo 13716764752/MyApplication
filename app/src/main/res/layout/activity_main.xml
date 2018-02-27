@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.simple.raman.okhttptest.MainActivity">
 
     <TextView
@@ -36,10 +38,38 @@
 
         app:layout_constraintTop_toTopOf="parent" />
     <TextView
-        android:id="@+id/tv_download"
+    android:id="@+id/tv_download"
+    android:onClick="onclick"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="数据下载"
+    />
+    <TextView
+        android:id="@+id/tv_jianzhidui"
         android:onClick="onclick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="数据下载"
-        />
-</android.support.constraint.ConstraintLayout>
+        android:text="键值对上传"
+        tools:layout_editor_absoluteY="78dp"
+        tools:layout_editor_absoluteX="136dp" />
+
+
+    <TextView
+    android:id="@+id/tv_Json"
+    android:onClick="onclick"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Json上传"
+    tools:layout_editor_absoluteY="128dp"
+    tools:layout_editor_absoluteX="136dp" />
+
+    <TextView
+        android:id="@+id/tv_File"
+        android:onClick="onclick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="File文件上传"
+        tools:layout_editor_absoluteY="196dp"
+        tools:layout_editor_absoluteX="128dp" />
+
+</LinearLayout>

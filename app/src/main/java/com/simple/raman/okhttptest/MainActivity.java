@@ -31,10 +31,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onclick(View view)
-    {
-        switch (view.getId())
-        {
+    public void onclick(View view) {
+        switch (view.getId()) {
             case R.id.tv_get:
                 getAsynHttp();
                 break;
@@ -48,6 +46,20 @@ public class MainActivity extends AppCompatActivity {
                 downAsynFile();
                 break;
 
+            case R.id.tv_jianzhidui:
+                httpPost(view);
+                break;
+            case R.id.tv_Json:
+              httpPostJSON(view);
+                break;
+            case R.id.tv_File:
+                try {
+                    postFile(view);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
         }
     }
 
@@ -57,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void getAsynHttp() {
-        OkHttpClient   mOkHttpClient=new OkHttpClient();
+        OkHttpClient mOkHttpClient = new OkHttpClient();
         Request.Builder requestBuilder = new Request.Builder().url("http://www.baidu.com");
         //可以省略，默认是GET请求
-        requestBuilder.method("GET",null);
+        requestBuilder.method("GET", null);
         Request request = requestBuilder.build();
-        Call mcall= mOkHttpClient.newCall(request);
+        Call mcall = mOkHttpClient.newCall(request);
         mcall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -93,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
      * post请求
      */
     private void postAsynHttp() {
-        OkHttpClient  mOkHttpClient=new OkHttpClient();
+        OkHttpClient mOkHttpClient = new OkHttpClient();
         RequestBody formBody = new FormBody.Builder()
                 .add("size", "10")
                 .build();
@@ -129,10 +141,10 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void postAsynFile() {
-        OkHttpClient   mOkHttpClient=new OkHttpClient();
+        OkHttpClient mOkHttpClient = new OkHttpClient();
         File file = new File("/sdcard/wangshu.txt");
         Request request = new Request.Builder()
-                .url("https://api.github.com/markdown/raw")
+                .url("http://192.168.197.1:8080/okHttpTest/okHttpJsonServletTest")
                 .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
                 .build();
 
@@ -144,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.i("wangshu",response.body().string());
+                Log.i("wangshu", response.body().string());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -199,17 +211,18 @@ public class MainActivity extends AppCompatActivity {
      */
     /**
      * post请求
+     *
      * @param view
      */
-    public void httpPost(View view){
+    public void httpPost(View view) {
         //换成自己的ip就行
-        String url = "http://10.104.4.1:8080/okhttp/LoginServlet";
+        String url = "http://192.168.197.1:8080/okHttpTest/okHttpServletTest";
         OkHttpClient client = new OkHttpClient();//创建okhttp实例
-        FormBody body=new FormBody.Builder()
-                .add("name","张三")
-                .add("age","23")
+        FormBody body = new FormBody.Builder()
+                .add("name", "张飞+赵云")
+                .add("age", "24")
                 .build();
-        Request request=new Request.Builder().post(body).url(url).build();
+        Request request = new Request.Builder().post(body).url(url).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             //请求失败时调用
@@ -217,11 +230,18 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 Log.i("wangshu", "onFailure: " + e);
             }
+
             //请求成功时调用
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     Log.i("wangshu", "onResponse: " + response.body().string());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "键值对请求成功", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
@@ -232,15 +252,15 @@ public class MainActivity extends AppCompatActivity {
      * Android端上传到服务器
      * 自己搭建服务器
      */
-    public void httpPostJSON(View view){
-        String json="{\n" +
-                "    \"name\": \"张三 \"\"age\": \"23 \"\n" +
+    public void httpPostJSON(View view) {
+        String json = "{\n" +
+                "    \"name\": \"张菲菲 \"\"age\": \"24 \"\n" +
                 "}";
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         //换成自己的ip就行
-        String url = "http://10.104.4.1:8080/okhttp/LoginServlet";
+        String url = "http://192.168.197.1:8080/okHttpTest/okHttpJsonServletTest";
         OkHttpClient client = new OkHttpClient();//创建okhttp实例
-        RequestBody body=RequestBody.create(JSON,json);
+        RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -252,11 +272,18 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 Log.i("wangshu", "onFailure: " + e);
             }
+
             //请求成功时调用
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     Log.i("wangshu", "onResponse: " + response.body().string());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Json数据请求成功", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
@@ -290,18 +317,24 @@ public class MainActivity extends AppCompatActivity {
         MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
         OkHttpClient client = new OkHttpClient();//获取OkHttpClient实例
         RequestBody body = RequestBody.create(MEDIA_TYPE_MARKDOWN, new File("/sdcard/wangshu.txt"));
-        String uri = "http://10.104.65.140:8080/okhttp/LoginServlet";
+        String uri = "http://192.168.197.1:8080/okHttpTest/okHttpJsonServletTest";
         final Request request = new Request.Builder().url(uri).post(body).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("wangshu", "onFailure: "+e);
+                Log.i("wangshu", "onFailure: " + e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.i("wangshu", "onResponse: "+response.body().string());
+                Log.i("wangshu", "onResponse: " + response.body().string());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "文件上传请求成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
